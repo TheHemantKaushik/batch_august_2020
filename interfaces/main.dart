@@ -1,5 +1,3 @@
-import 'dart:html';
-
 class User {
   final String id;
   final String name;
@@ -24,13 +22,6 @@ class FakeLoginManager extends LoginManager {
     }
     return null;
   }
-
-  User login2(String email, String password) {
-    if (email == "abc@example.com" && password == "123456") {
-      return new User("id_001", "John Doe");
-    }
-    return null;
-  }
 }
 
 class RealLoginManager extends LoginManager {
@@ -43,8 +34,20 @@ class RealLoginManager extends LoginManager {
   }
 }
 
+class TestLoginManager extends LoginManager {
+  @override
+  User login(String email, String password) {
+    if (email == "abc@example.com" && password == "123456") {
+      return new User("id_001", "John Doe");
+    }
+    return null;
+  }
+}
+
 class LoginPage {
-  final LoginManager manager = RealLoginManager();
+  final LoginManager manager;
+
+  LoginPage(this.manager);
 
   void submit() {
     String email = "abc@example.com";
@@ -53,8 +56,19 @@ class LoginPage {
   }
 }
 
+//email=password
+final releaseMode = true;
+
 void main() {
-  LoginPage page = new LoginPage();
+  LoginManager manager;
+  if (releaseMode) {
+    manager = RealLoginManager();
+  } else {
+    manager = TestLoginManager();
+  }
+
+  LoginPage page = new LoginPage(manager);
+
   page.submit();
 }
 
